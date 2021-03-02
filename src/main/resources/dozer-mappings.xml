@@ -1,0 +1,19 @@
+<mappings xmlns="http://dozer.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+	<mapping>
+		<class-a>ir.amin.contextswitch.jpa.entity.Car</class-a>
+		<class-b>ir.amin.contextswitch.jpa.entity.Car</class-b>
+		<field>
+			<a>name</a>
+			<b>name</b>
+		</field>
+		<field-exclude>
+			<a>id</a>
+			<b>id</b>
+		</field-exclude>
+	</mapping>
+
+
+</mappings> 
