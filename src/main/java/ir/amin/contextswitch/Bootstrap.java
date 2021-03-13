@@ -74,11 +74,23 @@ public class Bootstrap {
 				 */
 				
 				
-
-			    List<String> mappingFiles = new ArrayList<String>();
-			    mappingFiles.add("dozer-mappings.xml");
-			    DozerBeanMapper mapper = new DozerBeanMapper();
-			    mapper.setMappingFiles(mappingFiles);
+                            /*
+			     * Method 1 : clear OpenJPA State
+			     */
+			    Field field = car.getClass().getDeclaredField("pcStateManager");
+			    field.setAccessible(true);
+			    field.set(car, null);
+			    car.setId(null);
+			    h2JPAManager.insertCar(car);
+				
+			   /*
+			    * Method 2: entity mapping 
+			    */
+				
+			//    List<String> mappingFiles = new ArrayList<String>();
+			//    mappingFiles.add("dozer-mappings.xml");
+			//    DozerBeanMapper mapper = new DozerBeanMapper();
+			//    mapper.setMappingFiles(mappingFiles);
 
 
 			    Car h2Car = mapper.map(car, Car.class);
