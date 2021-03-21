@@ -1,15 +1,14 @@
 package ir.amin.contextswitch;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.LockModeType;
-import javax.persistence.Persistence;
-
 import org.dozer.DozerBeanMapper;
+import org.dozer.loader.DozerBuilder.FieldDefinitionBuilder;
+import org.dozer.loader.api.BeanMappingBuilder;
+import org.dozer.loader.api.FieldDefinition;
 
 import ir.amin.contextswitch.jpa.entity.Car;
 
@@ -18,12 +17,16 @@ public class Bootstrap {
 	public static void main(String[] args) throws IOException, SQLException {
 
 		JPAManager mysqlJPAManager = new JPAManager("mysqlpu");
+		mysqlJPAManager.truncateCarTable();
+		
+		
 		mysqlJPAManager.insertSampleData();
 		System.out.println(mysqlJPAManager.carCount());
 		List<Car> cars = mysqlJPAManager.getCars();
 		
 		try {
 			JPAManager h2JPAManager = new JPAManager("h2pu");
+			h2JPAManager.truncateCarTable();
 			for (Car car : cars) {
 				
 				/*
@@ -73,39 +76,27 @@ public class Bootstrap {
 				 * FailedObject: ir.amin.contextswitch.jpa.entity.Car-1
 				 */
 				
+				/*
+				 * Method 1 : clear OpenJPA State
+				 */
+				Field field = car.getClass().getDeclaredField("pcStateManager");
+				field.setAccessible(true);
+				field.set(car, null);
+				car.setId(null);
+				h2JPAManager.insertCar(car);
 				
-                            /*
-			     * Method 1 : clear OpenJPA State
-			     */
-			    Field field = car.getClass().getDeclaredField("pcStateManager");
-			    field.setAccessible(true);
-			    field.set(car, null);
-			    car.setId(null);
-			    h2JPAManager.insertCar(car);
-				
-			   /*
-			    * Method 2: entity mapping 
-			    */
-				
-			//    List<String> mappingFiles = new ArrayList<String>();
-			//    mappingFiles.add("dozer-mappings.xml");
-			//    DozerBeanMapper mapper = new DozerBeanMapper();
-			//    mapper.setMappingFiles(mappingFiles);
-
-
-			    Car h2Car = mapper.map(car, Car.class);
-			    /*
-			     * <openjpa-2.4.2-r422266:1777108 nonfatal store error> org.apache.openjpa.persistence.EntityExistsException:
-			     *  Attempt to persist detached object "ir.amin.contextswitch.jpa.entity.Car@6ad6fa53".  If this is a new instance, make sure any version and/or auto-generated primary key fields are null/default when persisting.
-			     * FailedObject: ir.amin.contextswitch.jpa.entity.Car@6ad6fa5
-			     */
-			    
-				
-				h2JPAManager.insertCar(h2Car);
+				/*
+				 * Method 2: entity mapping 
+				 */
+/*
+			   	DozerManager<Car> dozerManager = new DozerManager<Car>(); 
+			   	Car h2Car = dozerManager.clone(car);
+			   	h2JPAManager.insertCar(h2Car);
+			   */
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			mysqlJPAManager.cleanMySQL();
+			mysqlJPAManager.truncateCarTable();
 		}
 //		h2JPAManager.insertSampleData();
 //		System.out.println(h2JPAManager.carCount());

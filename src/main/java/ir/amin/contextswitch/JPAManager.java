@@ -48,6 +48,7 @@ public class JPAManager {
 		transaction.begin();
 		entityManager.persist(car);
 		transaction.commit();
+		car.getClass().getSimpleName();
 	}
 
 	private EntityManager getEntityManager(String puName) {
@@ -67,7 +68,7 @@ public class JPAManager {
 		return entityManager;
 	}
 
-	public void cleanMySQL() {
+	public void truncateCarTable() {
 		entityManager.getTransaction().begin();
 
 		// JPQL

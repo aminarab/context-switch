@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://dozer.sourceforge.net
           http://dozer.sourceforge.net/schema/beanmapping.xsd">
 
-	<mapping>
+	<mapping map-id="Car">
 		<class-a>ir.amin.contextswitch.jpa.entity.Car</class-a>
 		<class-b>ir.amin.contextswitch.jpa.entity.Car</class-b>
 		<field>
